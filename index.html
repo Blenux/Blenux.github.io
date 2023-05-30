@@ -1,35 +1,63 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Blenux World</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
+  <link id="theme-style" rel="stylesheet" type="text/css" href="light.css">
+  <style>
+    .toggle-button {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+  </style>
 </head>
+
 <body>
   <header>
-    <h1>
-    Welcome to my personal website, below you find some links of what I've gotten myself into.
-    </h1>
+    <div class="container">
+      <h1>Welcome to my personal website, below you find some links of what I've gotten myself into.</h1>
+    </div>
   </header>
+  <p></p>
 
-  <main>
-    <section><h1></h1>
-      Note that website is very minimal currently, this is intentional has I wanted it to be simple and diy in nature,
-      so look of the website may change over time.
+  <div class="container centered">
+    <a href="https://github.com/Blenux">My Github Page</a>
+    <p></p>
+    <a href="https://blenux.github.io/modding.html">Game Mods</a>
+  </div>
+  <p></p>
 
-      Thanks for visiting!
-    </section>
-    
-    <p></p>
-    <a href="https://github.com/Blenux">Github</a>
-    <p></p>
-    <a href="https://blenux.github.io\modding.html">Game Mods</a>
-    <p></p>
-  </main>
+  <div class="container">
+    *This site might look different over time, due to learning HTML/CSS on my own,
+    <p>
+      (yes with some ChatGPT help 😉).
+    </p>
+  </div>
+  <p></p>
 
   <footer>
-    <p>&copy; 2023</p>
+    &copy; 2023
+    <button id="toggle-button" class="toggle-button">Switch Theme</button>
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    var toggleButton = document.getElementById('toggle-button');
+    var themeStyle = document.getElementById('theme-style');
+
+    toggleButton.addEventListener('click', function() {
+      if (themeStyle.getAttribute('href') === 'light.css') {
+        themeStyle.setAttribute('href', 'dark.css');
+      } else {
+        themeStyle.setAttribute('href', 'light.css');
+      }
+    });
+  </script>
 </body>
+
 </html>
