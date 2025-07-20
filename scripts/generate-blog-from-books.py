@@ -235,6 +235,9 @@ def main():
             print("✅ Cleaned up orphaned blog posts.")
         else:
             print("No blog files found in books folder.")
+        
+        # Generate static index even if no posts (to clear it)
+        generate_static_index(blog_files)
         return
     
     print(f"Found {len(blog_files)} blog file(s) in books folder.")
@@ -263,12 +266,36 @@ def main():
         except Exception as e:
             print(f"❌ Error processing {file_path.name}: {e}")
     
+    # Generate static index for GitHub Pages
+    generate_static_index(blog_files)
+    
     if deleted_count > 0:
         print("✅ Cleaned up orphaned blog posts.")
     
     print("🎉 Blog generation complete!")
     print(f"📁 HTML files created in: {blog_posts_dir}")
     print("🌐 View your blog at: http://localhost:8000/blogs.html")
+    print("🚀 Static index ready for GitHub Pages!")
+
+def generate_static_index(blog_files):
+    """Generate static blog index for GitHub Pages."""
+    try:
+        # Import the static index generator
+        import subprocess
+        import sys
+        
+        # Run the static index generator
+        static_script = Path(__file__).parent / 'generate-static-blog-index.py'
+        result = subprocess.run([sys.executable, str(static_script)], 
+                              capture_output=True, text=True, cwd=Path(__file__).parent.parent)
+        
+        if result.returncode == 0:
+            print("✅ Static blog index generated for GitHub Pages")
+        else:
+            print(f"⚠️  Static index generation failed: {result.stderr}")
+            
+    except Exception as e:
+        print(f"⚠️  Could not generate static index: {e}")
 
 if __name__ == '__main__':
     main() 
