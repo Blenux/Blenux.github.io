@@ -1,0 +1,253 @@
+/* Basics */
+
+body {
+    background-color: #2e2e2e;
+    color: #ddd;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1em;
+    line-height: 1.7;
+    overflow-y: auto;
+    max-width: 55rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+img {
+    max-width: 100%
+}
+
+a {
+    color: #52C0FF;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+/* Typo */
+
+h1, h2, h3, h4, h5, h6 {
+    color: #fff;
+    font-family: "Mako", Helvetica, Arial, sans-serif;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 2.2em;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #52C0FF;
+    padding-bottom: 0.5rem;
+}
+
+h2 {
+    font-size: 1.6em;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #52C0FF;
+}
+
+h3 {
+    font-size: 1.3em;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    color: #fff;
+}
+
+/* Blog Articles */
+
+article {
+    margin-bottom: 3rem;
+    padding: 1.5rem;
+    background-color: #363636;
+    border-left: 4px solid #52C0FF;
+    border-radius: 4px;
+}
+
+article:last-child {
+    margin-bottom: 0;
+}
+
+article p {
+    margin-bottom: 1rem;
+}
+
+article em {
+    color: #999;
+    font-style: italic;
+}
+
+article ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+article li {
+    margin-bottom: 0.5rem;
+}
+
+/* Blog Previews */
+
+.blog-preview {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background-color: #363636;
+    border-left: 4px solid #52C0FF;
+    border-radius: 4px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blog-preview:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(82, 192, 255, 0.2);
+}
+
+.blog-preview h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.blog-preview h2 a {
+    color: #52C0FF;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.blog-preview h2 a:hover {
+    color: #fff;
+}
+
+.blog-preview p {
+    margin-bottom: 1rem;
+}
+
+.blog-preview .tags {
+    margin: 1rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    background-color: #52C0FF;
+    color: #2e2e2e;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.blog-preview p:last-child {
+    margin-top: 1.5rem;
+    margin-bottom: 0;
+}
+
+.blog-preview p:last-child a {
+    color: #52C0FF;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.blog-preview p:last-child a:hover {
+    color: #fff;
+}
+
+/*
+ * Default template styling
+ *  - header
+ *  - nav
+ *  - main
+ *  - #content (legacy)
+ *  - footer
+ */
+
+/* Header */
+
+header {
+    display: flex;
+    align-items: right;
+    justify-content: space-between;
+    margin-top: 1rem;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #52C0FF;
+}
+
+.logo {
+    max-width: 20rem;
+}
+
+/* Nav */
+
+nav {
+    margin: 1.5rem 0;
+    padding: 1rem 0;
+    border-bottom: 1px solid #444;
+}
+
+nav a {
+    color: #FFF;
+    padding: .4rem .8rem;
+    text-decoration: none;
+    border-bottom: 2px solid #2e2e2e;
+    margin-right: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+nav a:hover {
+    border-bottom: 2px solid #52C0FF;
+}
+
+.active {
+    border-bottom: 2px solid #52C0FF;
+}
+
+/* Main */
+
+main {
+    margin: 2rem 0;
+}
+
+main > * + * {
+    margin-top: 1.5rem;
+}
+
+main ul, main ol {
+    margin-left: 2rem;
+}
+
+main li {
+    margin-bottom: 1em;
+}
+
+/*
+ * #content used to be the old content wrapper.
+ * It's still here for legacy purposes but the new content is wrapped
+ * in <main>, so all appropriate styling is found on that element above this comment
+ */
+
+#content {
+    max-width: 874px;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+#content p {
+    padding-right: 2em;
+}
+#content li {
+    margin-bottom: 1em;
+    padding-right: 2em;
+}
+
+/* Footer */
+
+footer {
+    border-top: 2px solid #242424;
+    color: #ccc;
+    font-size: .9rem;
+    text-align: center;
+    padding: 2em;
+    margin-top: 3rem;
+}

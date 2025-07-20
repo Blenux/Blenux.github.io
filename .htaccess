@@ -1,0 +1,12 @@
+# Custom 404 page for blog posts
+ErrorDocument 404 /404.html
+
+# Redirect blog-posts 404s to blogs page
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # If a blog post doesn't exist, redirect to blogs page
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} ^/blog-posts/.*\.html$
+    RewriteRule ^(.*)$ /blogs.html [R=302,L]
+</IfModule> 
