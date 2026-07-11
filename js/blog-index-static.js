@@ -1,7 +1,7 @@
-// Static blog index generated on 2025-07-20 21:57:16
+// Static blog index generated on 2026-07-20 21:57:16
 // This file contains all blog posts for GitHub Pages compatibility
 
-const staticBlogPosts = [{'title': 'Title', 'date': 'July 2025', 'tags': ['general'], 'excerpt': 'No Message Content.', 'filename': 'test.html'}];
+const staticBlogPosts = [{'title': 'Title', 'date': 'July 2026', 'tags': ['general'], 'excerpt': 'No Message Content.', 'filename': 'test.html'}];
 
 document.addEventListener('DOMContentLoaded', function() {
     displayBlogPosts();

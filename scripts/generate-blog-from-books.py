@@ -174,7 +174,7 @@ def create_blog_post_html(metadata, content, filename):
     </main>
 
     <footer>
-        &copy; 2025, All Rights Reserved
+        &copy; 2026, All Rights Reserved
     </footer>
 
 </body>
