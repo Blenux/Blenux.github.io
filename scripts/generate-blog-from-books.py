@@ -67,7 +67,7 @@ def parse_text_content(content, filename):
             continue
         
         # Everything else goes to body
-        elif in_body or (title and not date and not line.startswith('Tags: ') and not line.startswith('Excerpt: ')):
+        elif in_body or (title and not line.startswith('Tags: ') and not line.startswith('Excerpt: ')):
             body.append(line)
     
     # Use default title if none found
@@ -144,6 +144,7 @@ def create_blog_post_html(metadata, content, filename):
     html_content = convert_to_html(content)
     
     return f'''<!DOCTYPE html>
+<!-- Generated from books/ source file -->
 <html>
 <head>
     <title>Blenux - {metadata['title']}</title>
@@ -216,19 +217,24 @@ def main():
     for file_path, _ in blog_files:
         source_files.add(file_path.stem)
     
-    # Find HTML files that should be deleted (no corresponding source file)
+    # Find HTML files that should be deleted (no corresponding source file AND
+    # marked as generated from books/)
     files_to_delete = current_html_files - source_files
-    
-    # Delete orphaned HTML files
+
+    # Delete orphaned generated HTML files only
     deleted_count = 0
     for filename in files_to_delete:
         html_file = blog_posts_dir / f"{filename}.html"
         try:
-            html_file.unlink()
-            print(f"🗑️  Deleted: {filename}.html (source file removed)")
-            deleted_count += 1
+            content = html_file.read_text(encoding='utf-8')
+            if '<!-- Generated from books/ source file -->' in content:
+                html_file.unlink()
+                print(f"🗑️  Deleted: {filename}.html (source file removed)")
+                deleted_count += 1
+            else:
+                print(f"⏩ Kept: {filename}.html (not generated from books/)")
         except Exception as e:
-            print(f"❌ Error deleting {filename}.html: {e}")
+            print(f"❌ Error checking {filename}.html: {e}")
     
     if not blog_files:
         if deleted_count > 0:
@@ -266,34 +272,33 @@ def main():
         except Exception as e:
             print(f"❌ Error processing {file_path.name}: {e}")
     
-    # Generate static index for GitHub Pages
-    generate_static_index(blog_files)
-    
+    # BLX - Scan final blog-posts/ folder and rebuild the index
+    # This picks up both pages generated from books/ and pages created directly
+    generate_static_index()
+
     if deleted_count > 0:
         print("✅ Cleaned up orphaned blog posts.")
-    
+
     print("🎉 Blog generation complete!")
     print(f"📁 HTML files created in: {blog_posts_dir}")
     print("🌐 View your blog at: http://localhost:8000/blogs.html")
-    print("🚀 Static index ready for GitHub Pages!")
+    print("🚀 Blog data ready for GitHub Pages!")
 
-def generate_static_index(blog_files):
-    """Generate static blog index for GitHub Pages."""
+def generate_static_index():
+    """Generate static blog index from all HTML files in blog-posts/."""
     try:
-        # Import the static index generator
         import subprocess
         import sys
-        
-        # Run the static index generator
-        static_script = Path(__file__).parent / 'generate-static-blog-index.py'
-        result = subprocess.run([sys.executable, str(static_script)], 
+
+        scan_script = Path(__file__).parent / 'scan-blog-posts.py'
+        result = subprocess.run([sys.executable, str(scan_script)],
                               capture_output=True, text=True, cwd=Path(__file__).parent.parent)
-        
+
         if result.returncode == 0:
-            print("✅ Static blog index generated for GitHub Pages")
+            print("✅ Static blog index generated from blog-posts/")
         else:
             print(f"⚠️  Static index generation failed: {result.stderr}")
-            
+
     except Exception as e:
         print(f"⚠️  Could not generate static index: {e}")
 

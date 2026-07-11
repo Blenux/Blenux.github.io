@@ -6,8 +6,41 @@ Usage: python3 scripts/generate-static-blog-index.py
 
 import os
 import re
+import json
 from datetime import datetime
 from pathlib import Path
+
+def parse_date_to_timestamp(date_str):
+    """Parse various date formats and return a Unix timestamp for sorting."""
+    if not date_str or date_str == 'Unknown Date':
+        return 0
+
+    formats = [
+        '%Y-%m-%d',           # 2026-07-11
+        '%B %d, %Y',           # July 11, 2026
+        '%b %d, %Y',           # Jul 11, 2026
+        '%B %Y',               # July 2026
+        '%b %Y',               # Jul 2026
+        '%Y-%m',               # 2026-07
+        '%Y',                  # 2026
+    ]
+
+    for fmt in formats:
+        try:
+            dt = datetime.strptime(date_str.strip(), fmt)
+            return dt.timestamp()
+        except ValueError:
+            continue
+
+    # BLX - If no format matches, try to extract a year at least
+    year_match = re.search(r'(\d{4})', date_str)
+    if year_match:
+        try:
+            return datetime(int(year_match.group(1)), 1, 1).timestamp()
+        except ValueError:
+            pass
+
+    return 0
 
 def is_blog_file(content):
     """Check if a file contains 'blog = true' marker."""
@@ -67,7 +100,7 @@ def parse_text_content(content, filename):
             continue
         
         # Everything else goes to body
-        elif in_body or (title and not date and not line.startswith('Tags: ') and not line.startswith('Excerpt: ')):
+        elif in_body or (title and not line.startswith('Tags: ') and not line.startswith('Excerpt: ')):
             body.append(line)
     
     # Use default title if none found
@@ -96,90 +129,31 @@ def parse_text_content(content, filename):
     }
 
 def generate_static_blog_index(blog_posts):
-    """Generate static JavaScript with all blog posts embedded."""
-    
+    """Generate static JavaScript data file with all blog posts."""
+
     # Create the blog posts data
     posts_data = []
     for post in blog_posts:
         posts_data.append({
             'title': post['title'],
             'date': post['date'],
+            'timestamp': parse_date_to_timestamp(post['date']),
             'tags': post['tags'],
             'excerpt': post['excerpt'],
             'filename': post['filename']
         })
-    
-    # Sort posts by date (newest first)
-    posts_data.sort(key=lambda x: datetime.strptime(x['date'], '%B %Y'), reverse=True)
-    
-    # Generate the JavaScript
-    js_content = f'''// Static blog index generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-// This file contains all blog posts for GitHub Pages compatibility
 
-const staticBlogPosts = {posts_data};
+    # Sort posts by timestamp (newest first)
+    posts_data.sort(key=lambda x: x['timestamp'], reverse=True)
 
-document.addEventListener('DOMContentLoaded', function() {{
-    displayBlogPosts();
-}});
+    # Generate the JavaScript data file (rendering logic is in blog-render.js)
+    js_content = f'''// BLX - Auto-generated blog post data on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+// This file contains blog post metadata for GitHub Pages compatibility
+// Rendering logic is in blog-render.js
 
-function displayBlogPosts() {{
-    const blogContainer = document.getElementById('blog-posts');
-    if (!blogContainer) return;
-    
-    if (staticBlogPosts.length === 0) {{
-        blogContainer.innerHTML = '<p>No blog posts found.</p>';
-        return;
-    }}
-    
-    blogContainer.innerHTML = ''; // Clear existing content
-    
-    staticBlogPosts.forEach(post => {{
-        const preview = createBlogPreview(post);
-        blogContainer.appendChild(preview);
-    }});
-}}
-
-function createBlogPreview(post) {{
-    const article = document.createElement('article');
-    article.className = 'blog-preview';
-    
-    const title = document.createElement('h2');
-    const titleLink = document.createElement('a');
-    titleLink.href = `blog-posts/${{post.filename}}`;
-    titleLink.textContent = post.title;
-    title.appendChild(titleLink);
-    
-    const date = document.createElement('p');
-    date.innerHTML = `<em>Posted: ${{post.date}}</em>`;
-    
-    const excerpt = document.createElement('p');
-    excerpt.textContent = post.excerpt;
-    
-    const tags = document.createElement('div');
-    tags.className = 'tags';
-    post.tags.forEach(tag => {{
-        const tagSpan = document.createElement('span');
-        tagSpan.className = 'tag';
-        tagSpan.textContent = tag;
-        tags.appendChild(tagSpan);
-    }});
-    
-    const readMore = document.createElement('p');
-    const readMoreLink = document.createElement('a');
-    readMoreLink.href = `blog-posts/${{post.filename}}`;
-    readMoreLink.textContent = 'Read more...';
-    readMore.appendChild(readMoreLink);
-    
-    article.appendChild(title);
-    article.appendChild(date);
-    article.appendChild(excerpt);
-    article.appendChild(tags);
-    article.appendChild(readMore);
-    
-    return article;
-}}
+const staticBlogPosts = {json.dumps(posts_data, indent=2, ensure_ascii=False)};
 '''
-    
+
     return js_content
 
 def main():
@@ -216,28 +190,61 @@ def main():
     # Generate static JavaScript
     js_content = generate_static_blog_index(blog_files)
     
-    # Write the static JavaScript file
-    static_js_file = js_dir / 'blog-index-static.js'
+    # Write the static JavaScript data file
+    static_js_file = js_dir / 'blog-data.js'
     with open(static_js_file, 'w', encoding='utf-8') as f:
         f.write(js_content)
-    
-    print(f"✅ Generated static blog index: {static_js_file}")
+
+    print(f"✅ Generated blog data: {static_js_file}")
     print(f"📝 Contains {len(blog_files)} blog posts")
-    
-    # Update blogs.html to use static index
+
+    # Update blogs.html to use blog-data.js + blog-render.js
     blogs_html_file = project_root / 'blogs.html'
     if blogs_html_file.exists():
         with open(blogs_html_file, 'r', encoding='utf-8') as f:
             content = f.read()
-        
-        # Replace the dynamic loader with static loader
-        content = content.replace('js/blog-loader.js', 'js/blog-index-static.js')
-        
+
+        # Replace any old script references with the new shared approach
+        content = content.replace('js/blog-loader.js', 'js/blog-data.js"></script>\n    <script src="js/blog-render.js')
+        content = content.replace('js/blog-index-static.js', 'js/blog-data.js"></script>\n    <script src="js/blog-render.js')
+
+        # BLX - If blog-render.js is not yet referenced, add it after blog-data.js
+        if 'blog-render.js' not in content and 'blog-data.js' in content:
+            content = content.replace(
+                'js/blog-data.js"></script>',
+                'js/blog-data.js"></script>\n    <script src="js/blog-render.js"></script>'
+            )
+
         with open(blogs_html_file, 'w', encoding='utf-8') as f:
             f.write(content)
-        
-        print("✅ Updated blogs.html to use static index")
-    
+
+        print("✅ Updated blogs.html to use blog-data.js + blog-render.js")
+
+    # BLX - Update index.html to show recent posts
+    index_html_file = project_root / 'index.html'
+    if index_html_file.exists():
+        with open(index_html_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # Add blog scripts if not present
+        if 'blog-data.js' not in content:
+            content = content.replace(
+                '</body>',
+                '    <script src="js/blog-data.js"></script>\n    <script src="js/blog-render.js"></script>\n</body>'
+            )
+
+        # Add recent posts section if not present
+        if 'id="blog-posts"' not in content:
+            content = content.replace(
+                '</main>',
+                '        <h2>Recent Posts</h2>\n        <div id="blog-posts" data-limit="5">\n            <p>Loading blog posts...</p>\n        </div>\n        <p><a href="blogs.html">View all posts &rarr;</a></p>\n    </main>'
+            )
+
+        with open(index_html_file, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+        print("✅ Updated index.html with recent posts section")
+
     print("🎉 Static blog index ready for GitHub Pages!")
 
 if __name__ == '__main__':

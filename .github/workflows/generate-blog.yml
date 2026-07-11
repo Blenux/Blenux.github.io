@@ -1,0 +1,57 @@
+# BLX - Auto-generate blog posts and static index when content changes
+# Triggers on push to main when files in books/ are added/modified/deleted
+name: Generate Blog Posts
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'books/**'
+      - 'blog-posts/**'
+      - 'scripts/**'
+      - '.github/workflows/generate-blog.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate blog posts from books/
+        run: python3 scripts/generate-blog-from-books.py
+
+      - name: Scan blog-posts/ and rebuild index
+        run: python3 scripts/scan-blog-posts.py
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes to commit"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected"
+          fi
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Auto-generated blog posts [skip ci]"
+          git push
