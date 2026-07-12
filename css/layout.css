@@ -1,0 +1,307 @@
+/* BLX - Shared structural layout rules used by all themes */
+/* This file defines positioning, spacing, grids, and responsive behaviour. */
+/* Theme files supply the borders, backgrounds, colours, and visual flair. */
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: var(--gap, 8px);
+    gap: var(--gap, 8px);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+img {
+    max-width: 100%;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    line-height: 1.2;
+    margin: 0;
+}
+
+h1 {
+    font-size: 18px;
+    padding: 6px 12px;
+}
+
+h2 {
+    font-size: 16px;
+    padding: 6px 12px;
+}
+
+h3 {
+    font-size: 15px;
+    padding: 4px 12px;
+}
+
+/* Page regions */
+
+header {
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    font-size: 13px;
+}
+
+nav a {
+    display: inline-block;
+    padding: 4px 12px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+main {
+    flex: 1;
+    padding: var(--gap, 8px);
+    overflow: auto;
+}
+
+main > h1, main > h2 {
+    margin-top: 0;
+    margin-bottom: var(--gap, 8px);
+}
+
+footer {
+    padding: 4px 12px;
+    font-size: 12px;
+    text-align: right;
+}
+
+#theme-select {
+    padding: 4px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Blog articles and previews */
+
+article {
+    margin-bottom: var(--gap, 8px);
+    padding: 0;
+}
+
+article > *:not(h1):not(h2) {
+    padding: 8px 12px;
+    margin: 0;
+}
+
+article p {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+article em {
+    font-style: italic;
+}
+
+article ul, article ol {
+    margin: 8px 12px;
+    padding-left: 20px;
+}
+
+article li {
+    margin-bottom: 4px;
+}
+
+.blog-preview {
+    margin-bottom: var(--gap, 8px);
+    padding: 0;
+}
+
+.blog-preview h2 {
+    padding: 6px 12px;
+    font-size: 14px;
+    margin: 0;
+}
+
+.blog-preview > *:not(h2) {
+    padding: 8px 12px;
+    margin: 0;
+}
+
+.tags {
+    padding: 8px 12px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 2px 8px;
+    margin-right: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Blog categories and search */
+
+.blog-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: var(--gap, 8px);
+    padding: 4px;
+}
+
+.category-tab {
+    padding: 4px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.blog-search {
+    margin-bottom: var(--gap, 8px);
+}
+
+.blog-search-input {
+    padding: 6px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.blog-search-input:focus {
+    outline: none;
+}
+
+/* GitHub profile page */
+
+.github-profile {
+    text-align: center;
+    margin-bottom: var(--gap, 8px);
+    padding: 12px;
+}
+
+.github-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 8px;
+}
+
+.github-stats {
+    font-size: 13px;
+}
+
+.github-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--gap, 8px);
+    align-items: start;
+}
+
+.github-contributions {
+    margin-top: var(--gap, 8px);
+}
+
+.github-section {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    min-width: 0;
+}
+
+.github-section h2 {
+    margin: 0;
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+.github-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.github-list li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.github-meta {
+    display: block;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.github-list li p {
+    margin: 4px 0 0;
+}
+
+.github-repo-header {
+    margin: 12px 0 8px;
+    padding: 0 12px;
+    font-size: 16px;
+}
+
+.github-branch-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap, 8px);
+    padding: 0 12px 12px;
+}
+
+.github-branch-card {
+    padding: 8px;
+}
+
+.github-branch-card h4 {
+    margin: 0 0 8px;
+    padding: 4px 8px;
+    font-size: 13px;
+}
+
+.github-branch-card h4 a {
+    text-decoration: none;
+}
+
+/* Responsive design for smaller screens */
+
+@media screen and (max-width: 800px) {
+    .github-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    body {
+        padding: 4px;
+        gap: 4px;
+    }
+}

@@ -1,309 +1,181 @@
-/* BLX - i3 tiling window manager inspired theme */
+/* BLX - i3 tiling window manager visual theme */
 
 :root {
-    --i3-bg: #1a1a1a;
-    --i3-fg: #eeeeee;
-    --i3-border: #555555;
-    --i3-window-bg: #2e2e2e;
-    --i3-focused: #285577;
-    --i3-focused-border: #4c7899;
-    --i3-unfocused: #3a3a3a;
-    --i3-inactive: #888888;
-    --i3-urgent: #900000;
-    --i3-gap: 8px;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-body, html {
-    margin: 0;
-    padding: 0;
-    font-family: 'DejaVu Sans Mono', 'Liberation Mono', 'Courier New', monospace;
-    background-color: var(--i3-bg);
-    color: var(--i3-fg);
-    height: 100%;
+    --bg: #1a1a1a;
+    --fg: #eeeeee;
+    --window-bg: #2e2e2e;
+    --accent: #4c7899;
+    --border: #555555;
+    --muted: #888888;
+    --focused: #285577;
+    --unfocused: #3a3a3a;
+    --body-font: 'DejaVu Sans Mono', 'Liberation Mono', 'Courier New', monospace;
+    --heading-font: var(--body-font);
+    --gap: 8px;
 }
 
 body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    padding: var(--i3-gap);
-    gap: var(--i3-gap);
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--body-font);
 }
 
 a {
-    color: #4c7899;
-    text-decoration: none;
+    color: var(--accent);
 }
 
 a:hover {
     color: #6c98b9;
-    text-decoration: underline;
 }
 
-/* Every major block is a tiled window */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--heading-font);
+}
+
 header, nav, main, footer, article {
-    border: 2px solid var(--i3-border);
-    background-color: var(--i3-window-bg);
+    border: 2px solid var(--border);
+    background-color: var(--window-bg);
 }
 
-/* Window title bars */
 header, article h1, article h2 {
-    background-color: var(--i3-unfocused);
-    color: var(--i3-inactive);
-    margin: 0;
-    padding: 6px 12px;
-    font-size: 14px;
-    font-weight: bold;
-    border-bottom: 2px solid var(--i3-border);
+    background-color: var(--unfocused);
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
     text-align: left;
 }
 
-/* Active/focused title bar style */
 header {
-    background-color: var(--i3-focused);
-    color: var(--i3-fg);
-    border-color: var(--i3-focused-border);
-    border-bottom: 2px solid var(--i3-focused-border);
+    background-color: var(--focused);
+    color: var(--fg);
+    border-color: var(--accent);
+    border-bottom: 2px solid var(--accent);
     text-align: center;
 }
 
 article h1, article h2 {
-    background-color: var(--i3-focused);
-    color: var(--i3-fg);
-    border-color: var(--i3-focused-border);
+    background-color: var(--focused);
+    color: var(--fg);
+    border-color: var(--accent);
 }
 
 main {
-    flex: 1;
-    padding: var(--i3-gap);
-    background-color: var(--i3-bg);
-    overflow: auto;
+    background-color: var(--bg);
 }
 
 main > h1, main > h2 {
-    background-color: var(--i3-unfocused);
-    color: var(--i3-inactive);
-    border: 2px solid var(--i3-border);
-    border-bottom: 2px solid var(--i3-border);
-    padding: 6px 12px;
-    font-size: 14px;
-    margin-top: 0;
-}
-
-/* Navigation bar styled as i3 status bar */
-nav {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 8px;
-    background-color: var(--i3-bg);
-    border: 2px solid var(--i3-border);
-    font-size: 13px;
+    background-color: var(--unfocused);
+    color: var(--muted);
+    border: 2px solid var(--border);
 }
 
 nav a {
-    color: var(--i3-fg);
-    text-decoration: none;
-    padding: 4px 12px;
-    background-color: var(--i3-unfocused);
-    border: 1px solid var(--i3-border);
+    color: var(--fg);
+    background-color: var(--unfocused);
+    border: 1px solid var(--border);
 }
 
 nav a:hover, nav a.active {
-    background-color: var(--i3-focused);
-    color: var(--i3-fg);
-    border-color: var(--i3-focused-border);
+    background-color: var(--focused);
+    color: var(--fg);
+    border-color: var(--accent);
 }
 
 #theme-select {
-    background-color: var(--i3-unfocused);
-    color: var(--i3-fg);
-    border: 1px solid var(--i3-border);
-    padding: 4px 12px;
-    font-family: inherit;
-    font-size: 13px;
-    cursor: pointer;
+    background-color: var(--unfocused);
+    color: var(--fg);
+    border: 1px solid var(--border);
 }
 
 #theme-select:hover {
-    background-color: var(--i3-focused);
-    color: var(--i3-fg);
-    border-color: var(--i3-focused-border);
+    background-color: var(--focused);
+    color: var(--fg);
+    border-color: var(--accent);
 }
 
 #theme-select option {
-    background-color: var(--i3-window-bg);
-    color: var(--i3-fg);
+    background-color: var(--window-bg);
+    color: var(--fg);
 }
 
-/* Article/blog post windows */
-article {
-    margin-bottom: 12px;
-    padding: 0;
-    background-color: var(--i3-window-bg);
-}
-
-article > *:not(h1):not(h2) {
-    padding: 8px 12px;
-    margin: 0;
-}
-
-article p {
-    line-height: 1.6;
-}
-
-article ul, article ol {
-    margin: 8px 12px;
-    padding-left: 20px;
-}
-
-article li {
-    margin-bottom: 4px;
-}
-
-/* Blog preview cards are also windows */
 .blog-preview {
-    border: 2px solid var(--i3-border);
-    background-color: var(--i3-window-bg);
-    margin-bottom: 12px;
-    padding: 0;
+    border: 2px solid var(--border);
+    background-color: var(--window-bg);
 }
 
 .blog-preview h2 {
-    background-color: var(--i3-focused);
-    color: var(--i3-fg);
-    border-color: var(--i3-focused-border);
-    border-bottom: 2px solid var(--i3-focused-border);
-    padding: 6px 12px;
-    font-size: 14px;
-    margin: 0;
-}
-
-.blog-preview > *:not(h2) {
-    padding: 8px 12px;
-    margin: 0;
-}
-
-/* Tags inside posts */
-.tags {
-    padding: 8px 12px;
+    background-color: var(--focused);
+    color: var(--fg);
+    border-color: var(--accent);
+    border-bottom: 2px solid var(--accent);
 }
 
 .tag {
-    display: inline-block;
-    background-color: var(--i3-unfocused);
-    color: var(--i3-inactive);
-    border: 1px solid var(--i3-border);
-    padding: 2px 8px;
-    margin-right: 4px;
-    font-size: 12px;
+    background-color: var(--unfocused);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 0;
 }
 
-/* Blog categories and search in i3 style */
 .blog-categories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-bottom: 12px;
-    padding: 4px;
-    background-color: var(--i3-bg);
-    border: 2px solid var(--i3-border);
+    background-color: var(--bg);
+    border: 2px solid var(--border);
 }
 
 .category-tab {
-    background-color: var(--i3-unfocused);
-    color: var(--i3-fg);
-    border: 1px solid var(--i3-border);
-    padding: 4px 12px;
-    font-family: inherit;
-    font-size: 13px;
-    cursor: pointer;
+    background-color: var(--unfocused);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 0;
 }
 
 .category-tab:hover {
-    background-color: var(--i3-focused);
-    color: var(--i3-fg);
+    background-color: var(--focused);
+    color: var(--fg);
 }
 
 .category-tab.active {
-    background-color: var(--i3-focused);
-    border-color: var(--i3-focused-border);
-    color: var(--i3-fg);
-    font-weight: bold;
-}
-
-.blog-search {
-    margin-bottom: 12px;
+    background-color: var(--focused);
+    border-color: var(--accent);
+    color: var(--fg);
 }
 
 .blog-search-input {
-    background-color: var(--i3-window-bg);
-    color: var(--i3-fg);
-    border: 2px solid var(--i3-border);
-    padding: 6px 12px;
-    font-family: inherit;
-    font-size: 13px;
-    width: 100%;
-    max-width: 400px;
+    background-color: var(--window-bg);
+    color: var(--fg);
+    border: 2px solid var(--border);
 }
 
 .blog-search-input:focus {
-    outline: none;
-    border-color: var(--i3-focused-border);
+    border-color: var(--accent);
 }
 
-/* GitHub profile page in i3 style */
-
 .github-profile {
-    text-align: center;
-    margin-bottom: 12px;
-    padding: 12px;
-    border: 2px solid var(--i3-border);
-    background-color: var(--i3-window-bg);
+    border: 2px solid var(--border);
+    background-color: var(--window-bg);
 }
 
 .github-avatar {
-    width: 100px;
-    height: 100px;
-    border: 2px solid var(--i3-focused-border);
-    margin-bottom: 8px;
+    border: 2px solid var(--accent);
+    border-radius: 0;
 }
 
 .github-stats {
-    color: var(--i3-inactive);
-    font-size: 13px;
+    color: var(--muted);
 }
 
 .github-section {
-    margin-bottom: 12px;
-    border: 2px solid var(--i3-border);
-    background-color: var(--i3-window-bg);
-    padding: 0;
+    border: 2px solid var(--border);
+    background-color: var(--window-bg);
 }
 
 .github-section h2 {
-    background-color: var(--i3-focused);
-    color: var(--i3-fg);
-    margin: 0;
-    padding: 6px 12px;
-    font-size: 14px;
-    border-bottom: 2px solid var(--i3-focused-border);
-}
-
-.github-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    background-color: var(--focused);
+    color: var(--fg);
+    border-bottom: 2px solid var(--accent);
 }
 
 .github-list li {
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--i3-border);
+    border-bottom: 1px solid var(--border);
 }
 
 .github-list li:last-child {
@@ -311,134 +183,54 @@ article li {
 }
 
 .github-list li a {
-    color: var(--i3-focused-border);
-    font-weight: bold;
+    color: var(--accent);
+}
+
+.github-list li.selected {
+    background-color: var(--focused);
+    color: var(--fg);
+}
+
+.github-list li.selected a {
+    color: var(--fg);
 }
 
 .github-meta {
-    display: block;
-    color: var(--i3-inactive);
-    font-size: 12px;
-    margin-top: 2px;
+    color: var(--muted);
 }
 
 .github-branch-card .github-meta,
 #github-contrib-activity .github-meta {
-    color: var(--i3-focused-border);
+    color: var(--accent);
     font-weight: bold;
     font-size: 13px;
 }
 
 .github-list li p {
-    margin: 4px 0 0;
-    color: var(--i3-fg);
-}
-
-.github-repo-header {
-    margin: 12px 0 8px;
-    padding: 0 12px;
-    font-size: 16px;
-}
-
-.github-repo-header:first-child {
-    margin-top: 0;
+    color: var(--fg);
 }
 
 .github-repo-header a {
-    color: var(--i3-focused-border);
-}
-
-.github-branch-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 12px;
-    padding: 0 12px 12px;
+    color: var(--accent);
 }
 
 .github-branch-card {
-    border: 2px solid var(--i3-border);
-    background-color: var(--i3-bg);
-    padding: 8px;
+    border: 2px solid var(--border);
+    background-color: var(--bg);
 }
 
 .github-branch-card h4 {
-    margin: 0 0 8px;
-    padding: 4px 8px;
-    background-color: var(--i3-focused);
-    color: var(--i3-fg);
-    font-size: 13px;
-}
-
-main .github-grid {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 12px;
-    align-items: start;
-}
-
-.github-contributions {
-    margin-top: 12px;
-}
-
-.github-section {
-    margin: 0;
-    height: 100%;
-    min-width: 0;
-}
-
-.github-list li {
-    cursor: pointer;
-}
-
-.github-list li.selected {
-    background-color: var(--i3-focused);
-    color: var(--i3-fg);
-}
-
-.github-list li.selected a {
-    color: var(--i3-fg);
-}
-
-.github-branch-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 0;
+    background-color: var(--focused);
+    color: var(--fg);
+    border-bottom: none;
 }
 
 .github-branch-card h4 a {
-    color: var(--i3-fg);
-    text-decoration: none;
+    color: var(--fg);
 }
 
-@media screen and (max-width: 800px) {
-    main .github-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Footer as i3 status bar */
 footer {
-    background-color: var(--i3-bg);
-    color: var(--i3-inactive);
-    border: 2px solid var(--i3-border);
-    padding: 4px 12px;
-    font-size: 12px;
-    text-align: right;
-}
-
-/* Responsive design for smaller screens */
-@media screen and (max-width: 600px) {
-    nav {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    nav a, #theme-select {
-        text-align: left;
-    }
-
-    body {
-        padding: 4px;
-        gap: 4px;
-    }
+    background-color: var(--bg);
+    color: var(--muted);
+    border: 2px solid var(--border);
 }

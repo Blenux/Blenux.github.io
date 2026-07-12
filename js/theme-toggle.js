@@ -1,14 +1,16 @@
-// BLX - Theme selector script: defines the default stylesheet in one place and lets the user choose a theme
+// BLX - Theme selector script: injects the shared layout + chosen theme stylesheet
 // Stores the user's preference in localStorage
 
 (function() {
     const DEFAULT_THEME = 'i3a';
     const CSS_DIR = 'css';
+    const LAYOUT_CSS = 'layout.css';
     const STORAGE_KEY = 'blenux-theme';
 
     const THEMES = [
         { id: 'i3a', label: 'i3' },
-        { id: 'style', label: 'Test' }
+        { id: 'style', label: 'Test' },
+        { id: '98', label: 'Windows 98' }
     ];
 
     function isValidTheme(themeId) {
@@ -41,13 +43,14 @@
         return match ? match[1] : getCssBasePath();
     }
 
-    function injectStylesheet() {
-        let stylesheet = document.getElementById('theme-stylesheet');
+    function injectStylesheet(id, href) {
+        let stylesheet = document.getElementById(id);
         if (!stylesheet) {
             stylesheet = document.createElement('link');
-            stylesheet.id = 'theme-stylesheet';
+            stylesheet.id = id;
             stylesheet.rel = 'stylesheet';
             stylesheet.type = 'text/css';
+            stylesheet.href = href;
             document.head.appendChild(stylesheet);
         }
         return stylesheet;
@@ -65,11 +68,14 @@
     }
 
     function initHead() {
-        const stylesheet = injectStylesheet();
+        const basePath = getCssBasePath();
+        // BLX - Layout CSS is shared and never swapped
+        injectStylesheet('layout-stylesheet', basePath + LAYOUT_CSS);
+
+        // BLX - Theme CSS is injected and swapped by the dropdown
+        const stylesheet = injectStylesheet('theme-stylesheet', basePath + DEFAULT_THEME + '.css');
         const savedTheme = localStorage.getItem(STORAGE_KEY);
         const themeId = (savedTheme && isValidTheme(savedTheme)) ? savedTheme : DEFAULT_THEME;
-
-        // BLX - Apply saved preference or fall back to the centralized default theme
         setTheme(stylesheet, themeId);
     }
 
@@ -80,6 +86,15 @@
         const select = document.getElementById('theme-select');
         if (!select) return;
 
+        // BLX - Build the dropdown from the single THEMES list so options live in one place
+        select.innerHTML = '';
+        THEMES.forEach(function(theme) {
+            const option = document.createElement('option');
+            option.value = theme.id;
+            option.textContent = theme.label;
+            select.appendChild(option);
+        });
+
         select.value = getThemeFromHref(stylesheet.href);
 
         select.addEventListener('change', function() {
@@ -87,7 +102,7 @@
         });
     }
 
-    // BLX - Inject stylesheet immediately so the default theme loads without FOUC
+    // BLX - Inject stylesheets immediately so the default theme loads without FOUC
     initHead();
 
     // BLX - Wire up the selector once the DOM is ready

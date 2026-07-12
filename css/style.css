@@ -1,447 +1,230 @@
-/* Basics */
+/* BLX - Default visual theme */
 
-body {
-    background-color: #2e2e2e;
-    color: #ddd;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 1em;
-    line-height: 1.7;
-    overflow-y: auto;
-    max-width: 55rem;
-    margin: 0 auto;
-    padding: 0 1rem;
+:root {
+    --bg: #2e2e2e;
+    --fg: #ddd;
+    --window-bg: #363636;
+    --accent: #52C0FF;
+    --border: #444;
+    --muted: #888;
+    --focused: #285577;
+    --unfocused: #3a3a3a;
+    --body-font: 'Courier New', Courier, monospace;
+    --heading-font: "Mako", Helvetica, Arial, sans-serif;
+    --gap: 8px;
 }
 
-img {
-    max-width: 100%
+body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--body-font);
 }
 
 a {
-    color: #52C0FF;
+    color: var(--accent);
 }
 
 a:hover {
     text-decoration: none;
 }
 
-/* Typo */
-
 h1, h2, h3, h4, h5, h6 {
-    color: #fff;
-    font-family: "Mako", Helvetica, Arial, sans-serif;
-    line-height: 1.2;
+    font-family: var(--heading-font);
 }
 
 h1 {
-    font-size: 2.2em;
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid #52C0FF;
-    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent);
 }
 
 h2 {
-    font-size: 1.6em;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: #52C0FF;
+    color: var(--accent);
 }
 
 h3 {
-    font-size: 1.3em;
-    margin-top: 1.5rem;
-    margin-bottom: 0.8rem;
     color: #fff;
 }
 
-/* Blog Articles */
+header, nav, main, footer, article {
+    border: 2px solid var(--border);
+    background-color: var(--window-bg);
+}
+
+header {
+    background-color: var(--focused);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+article h1, article h2, .github-section h2 {
+    background-color: var(--focused);
+    color: #fff;
+    border-bottom: 2px solid var(--accent);
+}
+
+nav a {
+    color: #FFF;
+    border-bottom: 2px solid var(--bg);
+}
+
+nav a:hover, nav a.active {
+    border-bottom: 2px solid var(--accent);
+}
+
+#theme-select {
+    background: transparent;
+    color: #FFF;
+    border: 1px solid var(--border);
+}
+
+#theme-select:hover {
+    border-color: var(--accent);
+    background-color: var(--window-bg);
+}
+
+#theme-select option {
+    background-color: var(--bg);
+    color: var(--fg);
+}
 
 article {
-    margin-bottom: 3rem;
-    padding: 1.5rem;
-    background-color: #363636;
-    border-left: 4px solid #52C0FF;
+    border-left: 4px solid var(--accent);
     border-radius: 4px;
-}
-
-article:last-child {
-    margin-bottom: 0;
-}
-
-article p {
-    margin-bottom: 1rem;
 }
 
 article em {
     color: #999;
-    font-style: italic;
 }
-
-article ul {
-    margin: 1rem 0;
-    padding-left: 1.5rem;
-}
-
-article li {
-    margin-bottom: 0.5rem;
-}
-
-/* Blog Previews */
 
 .blog-preview {
-    margin-bottom: 2.5rem;
-    padding: 1.5rem;
-    background-color: #363636;
-    border-left: 4px solid #52C0FF;
+    border-left: 4px solid var(--accent);
     border-radius: 4px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .blog-preview:hover {
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(82, 192, 255, 0.2);
 }
 
-.blog-preview h2 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-}
-
 .blog-preview h2 a {
-    color: #52C0FF;
-    text-decoration: none;
-    transition: color 0.2s ease;
+    color: var(--accent);
 }
 
 .blog-preview h2 a:hover {
     color: #fff;
 }
 
-.blog-preview p {
-    margin-bottom: 1rem;
-}
-
-.blog-preview .tags {
-    margin: 1rem 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
 .tag {
-    background-color: #52C0FF;
-    color: #2e2e2e;
-    padding: 0.2rem 0.6rem;
+    background-color: var(--accent);
+    color: var(--bg);
     border-radius: 12px;
-    font-size: 0.8em;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.blog-preview p:last-child {
-    margin-top: 1.5rem;
-    margin-bottom: 0;
 }
 
 .blog-preview p:last-child a {
-    color: #52C0FF;
-    font-weight: bold;
-    text-decoration: none;
-    transition: color 0.2s ease;
+    color: var(--accent);
 }
 
 .blog-preview p:last-child a:hover {
     color: #fff;
 }
 
-/*
- * Default template styling
- *  - header
- *  - nav
- *  - main
- *  - #content (legacy)
- *  - footer
- */
-
-/* Header */
-
-header {
-    display: flex;
-    align-items: right;
-    justify-content: space-between;
-    margin-top: 1rem;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #52C0FF;
-}
-
-.logo {
-    max-width: 20rem;
-}
-
-/* Nav */
-
-nav {
-    margin: 1.5rem 0;
-    padding: 1rem 0;
-    border-bottom: 1px solid #444;
-}
-
-nav a {
-    color: #FFF;
-    padding: .4rem .8rem;
-    text-decoration: none;
-    border-bottom: 2px solid #2e2e2e;
-    margin-right: 1rem;
-    transition: border-color 0.2s ease;
-}
-
-nav a:hover {
-    border-bottom: 2px solid #52C0FF;
-}
-
-#theme-select {
-    background: transparent;
-    color: #FFF;
-    border: 1px solid #444;
-    border-radius: 4px;
-    padding: .4rem .8rem;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 1em;
-    cursor: pointer;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-#theme-select:hover {
-    border-color: #52C0FF;
-    background-color: #363636;
-}
-
-#theme-select option {
-    background-color: #2e2e2e;
-    color: #ddd;
-}
-
-.active {
-    border-bottom: 2px solid #52C0FF;
-}
-
-/* Main */
-
-main {
-    margin: 2rem 0;
-}
-
-main > * + * {
-    margin-top: 1.5rem;
-}
-
-main ul, main ol {
-    margin-left: 2rem;
-}
-
-main li {
-    margin-bottom: 1em;
-}
-
-/*
- * #content used to be the old content wrapper.
- * It's still here for legacy purposes but the new content is wrapped
- * in <main>, so all appropriate styling is found on that element above this comment
- */
-
-#content {
-    max-width: 874px;
-    padding-left: 1em;
-    padding-right: 1em;
-}
-
-#content p {
-    padding-right: 2em;
-}
-#content li {
-    margin-bottom: 1em;
-    padding-right: 2em;
-}
-
-/* Blog Categories & Search */
-
 .blog-categories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    background-color: var(--window-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
 }
 
 .category-tab {
-    background-color: #363636;
-    color: #ddd;
-    border: 1px solid #444;
+    background-color: var(--window-bg);
+    color: var(--fg);
+    border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 0.4rem 0.9rem;
-    cursor: pointer;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.95em;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .category-tab:hover {
-    background-color: #444;
-    border-color: #52C0FF;
+    background-color: var(--border);
+    border-color: var(--accent);
 }
 
 .category-tab.active {
-    background-color: #52C0FF;
-    color: #2e2e2e;
-    border-color: #52C0FF;
-    font-weight: bold;
-}
-
-.blog-search {
-    margin-bottom: 1.5rem;
+    background-color: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
 }
 
 .blog-search-input {
-    width: 100%;
-    max-width: 30rem;
-    background-color: #363636;
-    color: #ddd;
-    border: 1px solid #444;
+    background-color: var(--window-bg);
+    color: var(--fg);
+    border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 0.6rem 0.9rem;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 1em;
 }
 
 .blog-search-input:focus {
-    outline: none;
-    border-color: #52C0FF;
+    border-color: var(--accent);
 }
 
-/* GitHub profile page */
-
 .github-profile {
-    text-align: center;
-    margin-bottom: 2rem;
+    border: 2px solid var(--border);
+    border-radius: 4px;
 }
 
 .github-avatar {
-    width: 100px;
-    height: 100px;
+    border: 3px solid var(--accent);
     border-radius: 50%;
-    border: 3px solid #52C0FF;
-    margin-bottom: 1rem;
 }
 
 .github-stats {
-    color: #888;
-    font-size: .9em;
-}
-
-.github-grid {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 2rem;
-    align-items: start;
-}
-
-.github-contributions {
-    margin-top: 2rem;
+    color: var(--muted);
 }
 
 .github-section {
-    margin-bottom: 2rem;
+    border: 2px solid var(--border);
+    border-radius: 4px;
 }
 
 .github-section h2 {
-    border-bottom: 2px solid #52C0FF;
-    padding-bottom: .5rem;
-    margin-bottom: 1rem;
-}
-
-.github-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    border-bottom: 2px solid var(--accent);
 }
 
 .github-list li {
-    background-color: #2e2e2e;
-    border: 1px solid #444;
+    background-color: var(--bg);
+    border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 1rem;
     margin-bottom: .75rem;
 }
 
 .github-list li a {
-    font-weight: bold;
-    color: #52C0FF;
+    color: var(--accent);
 }
 
 .github-meta {
-    display: block;
-    color: #888;
-    font-size: .85em;
-    margin-top: .25rem;
+    color: var(--muted);
 }
 
 .github-branch-card .github-meta,
 #github-contrib-activity .github-meta {
-    color: #52C0FF;
+    color: var(--accent);
     font-weight: bold;
     font-size: .9em;
 }
 
 .github-list li p {
-    margin: .5rem 0 0;
     color: #CCC;
 }
 
-.github-repo-header {
-    margin: 1.5rem 0 .75rem;
-    font-size: 1.25rem;
-}
-
-.github-repo-header:first-child {
-    margin-top: 0;
-}
-
 .github-repo-header a {
-    color: #52C0FF;
-}
-
-.github-branch-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
+    color: var(--accent);
 }
 
 .github-branch-card {
-    background-color: #2e2e2e;
-    border: 1px solid #444;
+    background-color: var(--bg);
+    border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 1rem;
 }
 
 .github-branch-card h4 {
-    margin: 0 0 .75rem;
-    padding-bottom: .5rem;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid var(--border);
 }
-
-/* Footer */
 
 footer {
     border-top: 2px solid #242424;
     color: #ccc;
-    font-size: .9rem;
-    text-align: center;
-    padding: 2em;
-    margin-top: 3rem;
-}
-
-/* Responsive design for smaller screens */
-@media screen and (max-width: 800px) {
-    .github-grid {
-        grid-template-columns: 1fr;
-    }
 }
