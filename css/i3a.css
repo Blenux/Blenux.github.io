@@ -322,6 +322,13 @@ article li {
     margin-top: 2px;
 }
 
+.github-branch-card .github-meta,
+#github-contrib-activity .github-meta {
+    color: var(--i3-focused-border);
+    font-weight: bold;
+    font-size: 13px;
+}
+
 .github-list li p {
     margin: 4px 0 0;
     color: var(--i3-fg);
@@ -367,6 +374,10 @@ main .github-grid {
     grid-template-columns: 280px 1fr;
     gap: 12px;
     align-items: start;
+}
+
+.github-contributions {
+    margin-top: 12px;
 }
 
 .github-section {

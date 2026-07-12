@@ -344,6 +344,10 @@ main li {
     align-items: start;
 }
 
+.github-contributions {
+    margin-top: 2rem;
+}
+
 .github-section {
     margin-bottom: 2rem;
 }
@@ -378,6 +382,13 @@ main li {
     color: #888;
     font-size: .85em;
     margin-top: .25rem;
+}
+
+.github-branch-card .github-meta,
+#github-contrib-activity .github-meta {
+    color: #52C0FF;
+    font-weight: bold;
+    font-size: .9em;
 }
 
 .github-list li p {
