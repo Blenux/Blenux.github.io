@@ -136,11 +136,16 @@ def generate_blog_data_js(posts):
     """Generate the contents of js/blog-data.js from a list of posts."""
     posts.sort(key=lambda x: x['timestamp'], reverse=True)
 
+    # BLX - Build a sorted list of unique categories from all post tags
+    categories = sorted({tag.lower() for post in posts for tag in post.get('tags', [])})
+
     return f'''// BLX - Auto-generated blog post data on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 // This file contains blog post metadata for GitHub Pages compatibility
 // Rendering logic is in blog-render.js
 
 const staticBlogPosts = {json.dumps(posts, indent=2, ensure_ascii=False)};
+
+const staticBlogCategories = {json.dumps(categories, indent=2, ensure_ascii=False)};
 '''
 
 

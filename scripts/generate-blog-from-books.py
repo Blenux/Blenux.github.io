@@ -150,7 +150,7 @@ def create_blog_post_html(metadata, content, filename):
     <title>Blenux - {metadata['title']}</title>
     <meta name="tags" content="{', '.join(metadata['tags'])}">
     <meta name="excerpt" content="{metadata['excerpt']}">
-    <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <link id="theme-stylesheet" rel="stylesheet" type="text/css" href="../css/style.css">
 </head>
 
 <body>
@@ -159,8 +159,12 @@ def create_blog_post_html(metadata, content, filename):
     <nav>
         <a href="../index.html">Home</a>
         <a href="../blogs.html">Blogs</a>
-        <a href="https://github.com/Blenux" title="Visit Blenux's GitHub profile">GitHub</a>
+        <a href="../github.html">GitHub</a>
         <a href="../about.html">About</a>
+        <select id="theme-select" aria-label="Choose theme">
+            <option value="style">Default</option>
+            <option value="i3a">i3</option>
+        </select>
     </nav>
 
     <main>
@@ -178,6 +182,7 @@ def create_blog_post_html(metadata, content, filename):
         &copy; 2026, All Rights Reserved
     </footer>
 
+    <script src="../js/theme-toggle.js"></script>
 </body>
 </html>'''
 

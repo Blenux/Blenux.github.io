@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Blenux - Blogs</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link id="theme-stylesheet" rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
@@ -11,11 +11,18 @@
     <nav>
         <a href="index.html">Home</a>
         <a href="blogs.html">Blogs</a>
-        <a href="https://github.com/Blenux" title="Visit Blenux's GitHub profile">GitHub</a>
+        <a href="github.html">GitHub</a>
         <a href="about.html">About</a>
+        <select id="theme-select" aria-label="Choose theme">
+            <option value="style">Default</option>
+            <option value="i3a">i3</option>
+        </select>
     </nav>
 
     <main>
+        <div id="blog-categories" class="blog-categories"></div>
+        <div id="blog-search" class="blog-search"></div>
+
         <div id="blog-posts">
             <!-- Blog posts will be loaded here automatically -->
             <p>Loading blog posts...</p>
@@ -28,5 +35,6 @@
 
     <script src="js/blog-data.js"></script>
     <script src="js/blog-render.js"></script>
+    <script src="js/theme-toggle.js"></script>
 </body>
 </html>
