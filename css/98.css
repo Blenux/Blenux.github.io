@@ -1,6 +1,6 @@
-/* BLX - Windows 98 visual theme using 98.css via unpkg */
+/* BLX - Windows 98 visual theme using local vendored 98.css */
 
-@import url("https://unpkg.com/98.css");
+@import url("98/vendor.css");
 
 :root {
     --bg: var(--surface, #c0c0c0);

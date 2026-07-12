@@ -5,6 +5,7 @@
     const DEFAULT_THEME = 'i3a';
     const CSS_DIR = 'css';
     const LAYOUT_CSS = 'layout.css';
+    const CSS_VERSION = 'v2';
     const STORAGE_KEY = 'blenux-theme';
 
     const THEMES = [
@@ -50,7 +51,7 @@
             stylesheet.id = id;
             stylesheet.rel = 'stylesheet';
             stylesheet.type = 'text/css';
-            stylesheet.href = href;
+            stylesheet.href = href + '?' + CSS_VERSION;
             document.head.appendChild(stylesheet);
         }
         return stylesheet;
@@ -58,7 +59,7 @@
 
     function setTheme(stylesheet, themeId) {
         const basePath = getBasePathFromHref(stylesheet.href || getCssBasePath() + DEFAULT_THEME + '.css');
-        stylesheet.href = basePath + themeId + '.css';
+        stylesheet.href = basePath + themeId + '.css?' + CSS_VERSION;
         localStorage.setItem(STORAGE_KEY, themeId);
 
         const select = document.getElementById('theme-select');
