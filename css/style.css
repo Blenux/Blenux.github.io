@@ -385,6 +385,38 @@ main li {
     color: #CCC;
 }
 
+.github-repo-header {
+    margin: 1.5rem 0 .75rem;
+    font-size: 1.25rem;
+}
+
+.github-repo-header:first-child {
+    margin-top: 0;
+}
+
+.github-repo-header a {
+    color: #52C0FF;
+}
+
+.github-branch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.github-branch-card {
+    background-color: #2e2e2e;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 1rem;
+}
+
+.github-branch-card h4 {
+    margin: 0 0 .75rem;
+    padding-bottom: .5rem;
+    border-bottom: 1px solid #444;
+}
+
 /* Footer */
 
 footer {

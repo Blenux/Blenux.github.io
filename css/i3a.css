@@ -327,6 +327,84 @@ article li {
     color: var(--i3-fg);
 }
 
+.github-repo-header {
+    margin: 12px 0 8px;
+    padding: 0 12px;
+    font-size: 16px;
+}
+
+.github-repo-header:first-child {
+    margin-top: 0;
+}
+
+.github-repo-header a {
+    color: var(--i3-focused-border);
+}
+
+.github-branch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    padding: 0 12px 12px;
+}
+
+.github-branch-card {
+    border: 2px solid var(--i3-border);
+    background-color: var(--i3-bg);
+    padding: 8px;
+}
+
+.github-branch-card h4 {
+    margin: 0 0 8px;
+    padding: 4px 8px;
+    background-color: var(--i3-focused);
+    color: var(--i3-fg);
+    font-size: 13px;
+}
+
+main .github-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.github-section {
+    margin: 0;
+    height: 100%;
+    min-width: 0;
+}
+
+.github-list li {
+    cursor: pointer;
+}
+
+.github-list li.selected {
+    background-color: var(--i3-focused);
+    color: var(--i3-fg);
+}
+
+.github-list li.selected a {
+    color: var(--i3-fg);
+}
+
+.github-branch-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0;
+}
+
+.github-branch-card h4 a {
+    color: var(--i3-fg);
+    text-decoration: none;
+}
+
+@media screen and (max-width: 800px) {
+    main .github-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Footer as i3 status bar */
 footer {
     background-color: var(--i3-bg);
@@ -338,12 +416,6 @@ footer {
 }
 
 /* Responsive design for smaller screens */
-@media screen and (max-width: 800px) {
-    .github-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 @media screen and (max-width: 600px) {
     nav {
         flex-direction: column;
