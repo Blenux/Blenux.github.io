@@ -14,6 +14,13 @@
         });
     }
 
+    // BLX - Escape HTML to prevent XSS from GitHub-sourced data (commit messages, repo descriptions, etc.)
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = String(str == null ? '' : str);
+        return div.innerHTML;
+    }
+
     function createListItem(html) {
         const li = document.createElement('li');
         li.innerHTML = html;
@@ -53,14 +60,19 @@
     }
 
     function renderProfile(container, user) {
+        const login = escapeHtml(user.login);
+        const name = escapeHtml(user.name || user.login);
+        const bio = user.bio ? escapeHtml(user.bio) : '';
+        const avatarUrl = escapeHtml(user.avatar_url);
+        const htmlUrl = escapeHtml(user.html_url);
         container.innerHTML = `
-            <img src="${user.avatar_url}" alt="${user.login}'s avatar" class="github-avatar">
-            <h2>${user.name || user.login}</h2>
-            ${user.bio ? '<p>' + user.bio + '</p>' : ''}
+            <img src="${avatarUrl}" alt="${login}'s avatar" class="github-avatar">
+            <h2>${name}</h2>
+            ${bio ? '<p>' + bio + '</p>' : ''}
             <p class="github-stats">
                 ${user.public_repos} public repos &bull; ${user.followers} followers
             </p>
-            <p><a href="${user.html_url}" target="_blank" rel="noopener">Visit ${user.login} on GitHub &rarr;</a></p>
+            <p><a href="${htmlUrl}" target="_blank" rel="noopener">Visit ${login} on GitHub &rarr;</a></p>
         `;
     }
 
@@ -72,10 +84,11 @@
 
         const items = repos.map(repo => {
             const meta = repo.contrib ? '<span class="github-meta">Contribution</span>' : `<span class="github-meta">Updated ${formatDate(repo.updated_at)}</span>`;
+            const desc = repo.description ? '<p>' + escapeHtml(repo.description) + '</p>' : '';
             return createListItem(`
-                <a href="${repo.html_url}" target="_blank" rel="noopener">${repo.name}</a>
+                <a href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener">${escapeHtml(repo.name)}</a>
                 ${meta}
-                ${repo.description ? '<p>' + repo.description + '</p>' : ''}
+                ${desc}
             `);
         });
         renderList(container, items);
@@ -92,7 +105,7 @@
         repoGroups.forEach(group => {
             const repoHeader = document.createElement('h3');
             repoHeader.className = 'github-repo-header';
-            repoHeader.innerHTML = '<a href="' + group.repoUrl + '" target="_blank" rel="noopener">' + group.name + '</a>';
+            repoHeader.innerHTML = '<a href="' + escapeHtml(group.repoUrl) + '" target="_blank" rel="noopener">' + escapeHtml(group.name) + '</a>';
             container.appendChild(repoHeader);
 
             const branchGrid = document.createElement('div');
@@ -101,14 +114,14 @@
             group.branches.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'github-branch-card';
-                card.innerHTML = '<h4>' + item.branch + '</h4>';
+                card.innerHTML = '<h4>' + escapeHtml(item.branch) + '</h4>';
 
                 const list = document.createElement('ul');
                 list.className = 'github-list';
                 item.commits.forEach(commit => {
-                    const message = commit.message.split('\n')[0];
+                    const message = escapeHtml(commit.message.split('\n')[0]);
                     list.appendChild(createListItem(`
-                        <a href="${commit.url}" target="_blank" rel="noopener">${message}</a>
+                        <a href="${escapeHtml(commit.url)}" target="_blank" rel="noopener">${message}</a>
                         <span class="github-meta">${formatDate(commit.date)}</span>
                     `));
                 });
@@ -159,10 +172,11 @@
             const li = document.createElement('li');
             if (repo.name === activeRepo) li.classList.add('selected');
             const meta = repo.contrib ? '<span class="github-meta">Contribution</span>' : `<span class="github-meta">Updated ${formatDate(repo.updated_at)}</span>`;
+            const desc = repo.description ? '<p>' + escapeHtml(repo.description) + '</p>' : '';
             li.innerHTML = `
-                <a href="${repo.html_url}" target="_blank" rel="noopener">${repo.name}</a>
+                <a href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener">${escapeHtml(repo.name)}</a>
                 ${meta}
-                ${repo.description ? '<p>' + repo.description + '</p>' : ''}
+                ${desc}
             `;
             li.addEventListener('click', function(e) {
                 if (e.target.tagName === 'A') return;
@@ -183,9 +197,9 @@
         const list = document.createElement('ul');
         list.className = 'github-list';
         commits.forEach(commit => {
-            const message = commit.message.split('\n')[0];
+            const message = escapeHtml(commit.message.split('\n')[0]);
             list.appendChild(createListItem(`
-                <a href="${commit.url}" target="_blank" rel="noopener">${message}</a>
+                <a href="${escapeHtml(commit.url)}" target="_blank" rel="noopener">${message}</a>
                 <span class="github-meta">${formatDate(commit.date)}</span>
             `));
         });
@@ -206,14 +220,14 @@
         branchData.forEach(item => {
             const card = document.createElement('div');
             card.className = 'github-branch-card';
-            card.innerHTML = '<h4>' + item.branch + '</h4>';
+            card.innerHTML = '<h4>' + escapeHtml(item.branch) + '</h4>';
 
             const list = document.createElement('ul');
             list.className = 'github-list';
             item.commits.forEach(commit => {
-                const message = commit.message.split('\n')[0];
+                const message = escapeHtml(commit.message.split('\n')[0]);
                 list.appendChild(createListItem(`
-                    <a href="${commit.url}" target="_blank" rel="noopener">${message}</a>
+                    <a href="${escapeHtml(commit.url)}" target="_blank" rel="noopener">${message}</a>
                     <span class="github-meta">${formatDate(commit.date)}</span>
                 `));
             });
