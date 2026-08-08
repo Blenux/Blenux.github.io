@@ -1,5 +1,5 @@
-# BLX - Auto-generate blog posts and static index when content changes
-# Triggers on push to main when files in books/ are added/modified/deleted
+# BLX - Auto-generate blog posts, static index, and GitHub activity data
+# Triggers on push to main when content changes, and on a schedule for GitHub data refresh
 name: Generate Blog Posts
 
 on:
@@ -11,6 +11,9 @@ on:
       - 'blog-posts/**'
       - 'scripts/**'
       - '.github/workflows/generate-blog.yml'
+  schedule:
+    # BLX - Run every 6 hours to refresh GitHub activity data
+    - cron: '0 */6 * * *'
 
 permissions:
   contents: write
@@ -36,11 +39,17 @@ jobs:
       - name: Scan blog-posts/ and rebuild index
         run: python3 scripts/scan-blog-posts.py
 
+      - name: Generate GitHub activity data
+        run: python3 scripts/generate-github-data.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Check for changes
         id: changes
         run: |
           git add -A
           git add -f js/blog-data.js
+          git add -f js/github-data.js
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "No changes to commit"
@@ -54,5 +63,5 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -m "Auto-generated blog posts [skip ci]"
+          git commit -m "Auto-generated blog posts and GitHub activity data [skip ci]"
           git push
