@@ -156,13 +156,8 @@ def create_blog_post_html(metadata, content, filename):
 <body>
     <header>{metadata['title']}</header>
 
-    <nav>
-        <a href="../index.html">Home</a>
-        <a href="../blogs.html">Blogs</a>
-        <a href="../github.html">GitHub</a>
-        <a href="../about.html">About</a>
-        <select id="theme-select" aria-label="Choose theme"></select>
-    </nav>
+    <nav id="site-nav"></nav>
+    <script src="../js/nav.js"></script>
 
     <main>
         <article>
