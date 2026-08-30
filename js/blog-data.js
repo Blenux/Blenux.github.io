@@ -1,4 +1,4 @@
-// BLX - Auto-generated blog post data on 2026-08-30 03:52:04
+// BLX - Auto-generated blog post data on 2026-08-30 11:20:31
 // This file contains blog post metadata for GitHub Pages compatibility
 // Rendering logic is in blog-render.js
 
