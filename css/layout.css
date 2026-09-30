@@ -128,6 +128,25 @@ article ul, article ol {
     padding-left: 20px;
 }
 
+/* BLX - Inline code/pre from post markup; color-mix tint follows each theme's
+   text color, with a plain gray fallback for pre-2023 browsers */
+code {
+    font-family: monospace;
+    font-size: .95em;
+    padding: 0 .3em;
+    background-color: rgba(128, 128, 128, .2);
+    background-color: color-mix(in srgb, currentColor 12%, transparent);
+    border-radius: 3px;
+}
+
+pre {
+    padding: 8px 12px;
+    overflow-x: auto;
+    background-color: rgba(128, 128, 128, .15);
+    background-color: color-mix(in srgb, currentColor 8%, transparent);
+    border-radius: 3px;
+}
+
 article li {
     margin-bottom: 4px;
 }

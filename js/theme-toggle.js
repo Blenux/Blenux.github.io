@@ -5,7 +5,7 @@
     const DEFAULT_THEME = 'i3a';
     const CSS_DIR = 'css';
     const LAYOUT_CSS = 'layout.css';
-    const CSS_VERSION = 'v3';
+    const CSS_VERSION = 'v4';
     const STORAGE_KEY = 'blenux-theme';
 
     const THEMES = [

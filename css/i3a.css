@@ -28,6 +28,20 @@ a:hover {
     color: #6c98b9;
 }
 
+::selection {
+    background: var(--focused);
+    color: var(--fg);
+}
+
+/* BLX - Focused-border convention: i3 marks the active window with an accent border */
+nav a:focus-visible,
+.category-tab:focus-visible,
+#theme-select:focus-visible,
+.blog-search-input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--heading-font);
 }
@@ -107,6 +121,15 @@ nav a:hover, nav a.active {
     color: var(--fg);
     border-color: var(--accent);
     border-bottom: 2px solid var(--accent);
+}
+
+/* BLX - Title bar text stays fg; accent links on focused bg fail contrast */
+.blog-preview h2 a {
+    color: var(--fg);
+}
+
+.blog-preview h2 a:hover {
+    color: #6c98b9;
 }
 
 .tag {

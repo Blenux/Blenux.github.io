@@ -28,6 +28,19 @@ a:hover {
     text-decoration: none;
 }
 
+::selection {
+    background: var(--accent);
+    color: var(--bg);
+}
+
+nav a:focus-visible,
+.category-tab:focus-visible,
+#theme-select:focus-visible,
+.blog-search-input:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 1px;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--heading-font);
 }

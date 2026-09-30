@@ -138,6 +138,20 @@ article {
     color: #ffffff;
 }
 
+/* BLX - Title bar text stays white; link-blue on the blue gradient fails contrast */
+.blog-preview h2 a {
+    color: #ffffff;
+}
+
+/* BLX - Inline code as a sunken field chip */
+code {
+    background-color: #ffffff;
+    color: #000000;
+    border-radius: 0;
+    padding: 0 4px;
+    box-shadow: var(--border-field, inset -1px -1px #ffffff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a);
+}
+
 .tag {
     background-color: var(--dialog-blue, #000080);
     color: #ffffff;
