@@ -255,6 +255,11 @@ article li {
     margin-top: 2px;
 }
 
+/* BLX - Selected rows paint their own background; muted meta colors fail contrast there */
+.github-list li.selected .github-meta {
+    color: inherit;
+}
+
 .github-list li p {
     margin: 4px 0 0;
 }
