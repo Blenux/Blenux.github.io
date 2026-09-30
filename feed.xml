@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Blenux</title>
+  <link href="https://blenux.github.io/"/>
+  <link rel="self" href="https://blenux.github.io/feed.xml"/>
+  <id>https://blenux.github.io/</id>
+  <updated>2026-07-01T00:00:00Z</updated>
+  <author><name>Blenux</name></author>
+  <entry>
+    <title>Welcome to Blenux</title>
+    <link href="https://blenux.github.io/blog-posts/welcome.html"/>
+    <id>https://blenux.github.io/blog-posts/welcome.html</id>
+    <updated>2026-07-01T00:00:00Z</updated>
+    <summary>Welcome to my personal website. This site is still a work in progress.</summary>
+  </entry>
+</feed>
