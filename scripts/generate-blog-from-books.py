@@ -147,6 +147,8 @@ def create_blog_post_html(metadata, content, filename):
 <!-- Generated from books/ source file -->
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Blenux - {metadata['title']}</title>
     <meta name="tags" content="{', '.join(metadata['tags'])}">
     <meta name="excerpt" content="{metadata['excerpt']}">

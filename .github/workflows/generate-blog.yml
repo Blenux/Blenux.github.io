@@ -12,8 +12,8 @@ on:
       - 'scripts/**'
       - '.github/workflows/generate-blog.yml'
   schedule:
-    # BLX - Run every 6 hours to refresh GitHub activity data
-    - cron: '0 */6 * * *'
+    # BLX - Run daily to refresh GitHub activity data
+    - cron: '0 6 * * *'
 
 permissions:
   contents: write
@@ -33,11 +33,9 @@ jobs:
         with:
           python-version: '3.12'
 
+      # BLX - generate-blog-from-books.py already runs scan-blog-posts.py internally
       - name: Generate blog posts from books/
         run: python3 scripts/generate-blog-from-books.py
-
-      - name: Scan blog-posts/ and rebuild index
-        run: python3 scripts/scan-blog-posts.py
 
       - name: Generate GitHub activity data
         run: python3 scripts/generate-github-data.py
@@ -47,6 +45,16 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
+          # BLX - Restore generated files whose only changes are volatile
+          # timestamps (generated_at, repo updated_at), so quiet runs and
+          # self-referential updated_at bumps don't produce noise commits
+          for f in js/blog-data.js js/github-data.js; do
+            if git show HEAD:"$f" > /tmp/prev.js 2>/dev/null && \
+               diff <(grep -vE 'Auto-generated|generated_at|updated_at' /tmp/prev.js) \
+                    <(grep -vE 'Auto-generated|generated_at|updated_at' "$f") > /dev/null; then
+              git checkout HEAD -- "$f"
+            fi
+          done
           git add -A
           git add -f js/blog-data.js
           git add -f js/github-data.js

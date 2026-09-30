@@ -68,6 +68,16 @@ def fetch_repos():
     return api_get(url) or []
 
 
+def is_bot_commit(commit):
+    """Skip automation noise ([skip ci] commits, github-actions bot) in activity feeds."""
+    message = commit['commit']['message'].lower()
+    if '[skip ci]' in message or '[ci skip]' in message:
+        return True
+    author = commit.get('author') or {}
+    committer = commit.get('committer') or {}
+    return 'github-actions[bot]' in (author.get('login') or '', committer.get('login') or '')
+
+
 def fetch_branches(repo):
     url = 'https://api.github.com/repos/' + repo['full_name'] + '/branches?per_page=' + str(BRANCHES_PER_REPO)
     branches = api_get(url)
@@ -77,9 +87,10 @@ def fetch_branches(repo):
 
 
 def fetch_branch_commits(repo, branch):
+    # BLX - Fetch extra commits so bot commits can be filtered without shrinking the list
     url = ('https://api.github.com/repos/' + repo['full_name'] +
            '/commits?sha=' + urllib.parse.quote(branch) +
-           '&per_page=' + str(COMMITS_PER_BRANCH))
+           '&per_page=' + str(COMMITS_PER_BRANCH * 3))
     commits = api_get(url)
     if not commits:
         return []
@@ -90,13 +101,15 @@ def fetch_branch_commits(repo, branch):
             'date': (c['commit'].get('committer') or c['commit'].get('author', {})).get('date', ''),
         }
         for c in commits
-    ]
+        if not is_bot_commit(c)
+    ][:COMMITS_PER_BRANCH]
 
 
 def fetch_contrib_commits(repo):
+    # BLX - Fetch extra commits so bot commits can be filtered without shrinking the list
     url = ('https://api.github.com/repos/' + repo['full_name'] +
            '/commits?author=' + USERNAME +
-           '&per_page=' + str(CONTRIB_COMMITS_PER_REPO))
+           '&per_page=' + str(CONTRIB_COMMITS_PER_REPO * 2))
     commits = api_get(url)
     if not commits:
         return []
@@ -107,7 +120,8 @@ def fetch_contrib_commits(repo):
             'date': (c['commit'].get('committer') or c['commit'].get('author', {})).get('date', ''),
         }
         for c in commits
-    ]
+        if not is_bot_commit(c)
+    ][:CONTRIB_COMMITS_PER_REPO]
 
 
 def build_owned_repo_data(repos):
