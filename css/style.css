@@ -195,6 +195,15 @@ article em {
     color: var(--accent);
 }
 
+.github-list li.selected {
+    background-color: var(--focused);
+    color: var(--fg);
+}
+
+.github-list li.selected a {
+    color: var(--fg);
+}
+
 .github-meta {
     color: var(--muted);
 }

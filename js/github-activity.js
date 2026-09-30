@@ -3,8 +3,6 @@
 // No client-side API calls — all data comes from window.GITHUB_DATA
 
 (function() {
-    const I3_THEME_ID = 'i3a';
-
     function formatDate(isoString) {
         const date = new Date(isoString);
         return date.toLocaleDateString(undefined, {
@@ -31,32 +29,20 @@
         container.innerHTML = '<p>' + message + '</p>';
     }
 
-    function isI3Theme() {
-        const stylesheet = document.getElementById('theme-stylesheet');
-        if (!stylesheet) return false;
-        return stylesheet.href.indexOf('/css/' + I3_THEME_ID + '.css') !== -1;
-    }
-
     function getData() {
         return window.GITHUB_DATA || null;
     }
 
-    function getOwnedDetail(repoName) {
+    // BLX - Detail groups carry repoUrl, so match by URL: repo names can
+    // collide across different owners (e.g. two repos named the same)
+    function getOwnedDetail(repo) {
         const detail = (getData() && getData().owned_detail) || [];
-        return detail.find(g => g.name === repoName);
+        return detail.find(g => g.repoUrl === repo.html_url);
     }
 
-    function getContribDetail(repoName) {
+    function getContribDetail(repo) {
         const detail = (getData() && getData().contrib_detail) || [];
-        return detail.find(g => g.name === repoName);
-    }
-
-    function renderList(container, items) {
-        const list = document.createElement('ul');
-        list.className = 'github-list';
-        items.forEach(item => list.appendChild(item));
-        container.innerHTML = '';
-        container.appendChild(list);
+        return detail.find(g => g.repoUrl === repo.html_url);
     }
 
     function renderProfile(container, user) {
@@ -76,90 +62,28 @@
         `;
     }
 
-    function renderRepos(container, repos) {
-        if (repos.length === 0) {
-            setContainerMessage(container, 'No public repositories found.');
-            return;
-        }
-
-        const items = repos.map(repo => {
-            const meta = repo.contrib ? '<span class="github-meta">Contribution</span>' : `<span class="github-meta">Updated ${formatDate(repo.updated_at)}</span>`;
-            const desc = repo.description ? '<p>' + escapeHtml(repo.description) + '</p>' : '';
-            return createListItem(`
-                <a href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener">${escapeHtml(repo.name)}</a>
-                ${meta}
-                ${desc}
-            `);
-        });
-        renderList(container, items);
-    }
-
-    function renderCommits(container, repoGroups) {
-        if (repoGroups.length === 0) {
-            setContainerMessage(container, 'No recent commits found in your repos.');
-            return;
-        }
-
-        container.innerHTML = '';
-
-        repoGroups.forEach(group => {
-            const repoHeader = document.createElement('h3');
-            repoHeader.className = 'github-repo-header';
-            repoHeader.innerHTML = '<a href="' + escapeHtml(group.repoUrl) + '" target="_blank" rel="noopener">' + escapeHtml(group.name) + '</a>';
-            container.appendChild(repoHeader);
-
-            const branchGrid = document.createElement('div');
-            branchGrid.className = 'github-branch-grid';
-
-            group.branches.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'github-branch-card';
-                card.innerHTML = '<h4>' + escapeHtml(item.branch) + '</h4>';
-
-                const list = document.createElement('ul');
-                list.className = 'github-list';
-                item.commits.forEach(commit => {
-                    const message = escapeHtml(commit.message.split('\n')[0]);
-                    list.appendChild(createListItem(`
-                        <a href="${escapeHtml(commit.url)}" target="_blank" rel="noopener">${message}</a>
-                        <span class="github-meta">${formatDate(commit.date)}</span>
-                    `));
-                });
-
-                card.appendChild(list);
-                branchGrid.appendChild(card);
-            });
-
-            container.appendChild(branchGrid);
-        });
-    }
-
     let ownedRepos = [];
     let selectedOwnedRepo = '';
     let contribRepos = [];
     let selectedContribRepo = '';
 
-    function selectOwnedRepo(repoName) {
-        const repo = ownedRepos.find(r => r.name === repoName);
-        if (!repo) return;
-        selectedOwnedRepo = repoName;
+    function selectOwnedRepo(repo) {
+        selectedOwnedRepo = repo.html_url;
         const reposEl = document.getElementById('github-repos');
-        if (reposEl) renderI3RepoList(reposEl, ownedRepos, selectedOwnedRepo, 'owned');
+        if (reposEl) renderRepoList(reposEl, ownedRepos, selectedOwnedRepo, 'owned');
         const activityEl = document.getElementById('github-activity');
-        if (activityEl) renderI3RepoDetail(activityEl, repo);
+        if (activityEl) renderRepoDetail(activityEl, repo);
     }
 
-    function selectContribRepo(repoName) {
-        const repo = contribRepos.find(r => r.name === repoName);
-        if (!repo) return;
-        selectedContribRepo = repoName;
+    function selectContribRepo(repo) {
+        selectedContribRepo = repo.html_url;
         const reposEl = document.getElementById('github-contrib-repos');
-        if (reposEl) renderI3RepoList(reposEl, contribRepos, selectedContribRepo, 'contrib');
+        if (reposEl) renderRepoList(reposEl, contribRepos, selectedContribRepo, 'contrib');
         const activityEl = document.getElementById('github-contrib-activity');
-        if (activityEl) renderI3RepoDetail(activityEl, repo);
+        if (activityEl) renderRepoDetail(activityEl, repo);
     }
 
-    function renderI3RepoList(container, repos, activeRepo, type) {
+    function renderRepoList(container, repos, activeRepo, type) {
         if (repos.length === 0) {
             setContainerMessage(container, 'No repositories found.');
             return;
@@ -170,7 +94,7 @@
         list.className = 'github-list';
         repos.forEach(repo => {
             const li = document.createElement('li');
-            if (repo.name === activeRepo) li.classList.add('selected');
+            if (repo.html_url === activeRepo) li.classList.add('selected');
             const meta = repo.contrib ? '<span class="github-meta">Contribution</span>' : `<span class="github-meta">Updated ${formatDate(repo.updated_at)}</span>`;
             const desc = repo.description ? '<p>' + escapeHtml(repo.description) + '</p>' : '';
             li.innerHTML = `
@@ -180,8 +104,8 @@
             `;
             li.addEventListener('click', function(e) {
                 if (e.target.tagName === 'A') return;
-                if (type === 'contrib') selectContribRepo(repo.name);
-                else selectOwnedRepo(repo.name);
+                if (type === 'contrib') selectContribRepo(repo);
+                else selectOwnedRepo(repo);
             });
             list.appendChild(li);
         });
@@ -239,9 +163,9 @@
         container.appendChild(grid);
     }
 
-    function renderI3RepoDetail(container, repo) {
+    function renderRepoDetail(container, repo) {
         if (repo.contrib) {
-            const detail = getContribDetail(repo.name);
+            const detail = getContribDetail(repo);
             if (detail && detail.branches.length > 0 && detail.branches[0].commits) {
                 renderContribCommits(container, detail.branches[0].commits);
             } else {
@@ -250,7 +174,7 @@
             return;
         }
 
-        const detail = getOwnedDetail(repo.name);
+        const detail = getOwnedDetail(repo);
         if (detail && detail.branches.length > 0) {
             renderBranchData(container, detail.branches);
         } else {
@@ -277,12 +201,11 @@
 
         ownedRepos = data.owned_repos || [];
         contribRepos = data.contrib_repos || [];
-        selectedOwnedRepo = ownedRepos[0] ? ownedRepos[0].name : '';
-        selectedContribRepo = contribRepos[0] ? contribRepos[0].name : '';
+        selectedOwnedRepo = ownedRepos[0] ? ownedRepos[0].html_url : '';
+        selectedContribRepo = contribRepos[0] ? contribRepos[0].html_url : '';
 
-        const i3Mode = isI3Theme();
         const activitySection = activityEl.closest('.github-section');
-        if (i3Mode && activitySection) {
+        if (activitySection) {
             const heading = activitySection.querySelector('h2');
             if (heading) heading.textContent = 'Branches & Commits';
         }
@@ -293,18 +216,10 @@
             setContainerMessage(profileEl, 'Profile data not available.');
         }
 
-        if (i3Mode) {
-            renderI3RepoList(reposEl, ownedRepos, selectedOwnedRepo, 'owned');
-            if (ownedRepos[0]) renderI3RepoDetail(activityEl, ownedRepos[0]);
-            renderI3RepoList(contribReposEl, contribRepos, selectedContribRepo, 'contrib');
-            if (contribRepos[0]) renderI3RepoDetail(contribActivityEl, contribRepos[0]);
-        } else {
-            renderRepos(reposEl, ownedRepos);
-            const allGroups = (data.owned_detail || []).concat(data.contrib_detail || []);
-            renderCommits(activityEl, allGroups);
-            renderRepos(contribReposEl, contribRepos);
-            if (contribRepos[0]) renderI3RepoDetail(contribActivityEl, contribRepos[0]);
-        }
+        renderRepoList(reposEl, ownedRepos, selectedOwnedRepo, 'owned');
+        if (ownedRepos[0]) renderRepoDetail(activityEl, ownedRepos[0]);
+        renderRepoList(contribReposEl, contribRepos, selectedContribRepo, 'contrib');
+        if (contribRepos[0]) renderRepoDetail(contribActivityEl, contribRepos[0]);
     }
 
     if (document.readyState === 'loading') {

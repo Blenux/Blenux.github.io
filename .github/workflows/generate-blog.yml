@@ -48,7 +48,7 @@ jobs:
           # BLX - Restore generated files whose only changes are volatile
           # timestamps (generated_at, repo updated_at), so quiet runs and
           # self-referential updated_at bumps don't produce noise commits
-          for f in js/blog-data.js js/github-data.js; do
+          for f in js/blog-data.js js/github-data.js sitemap.xml feed.xml; do
             if git show HEAD:"$f" > /tmp/prev.js 2>/dev/null && \
                diff <(grep -vE 'Auto-generated|generated_at|updated_at' /tmp/prev.js) \
                     <(grep -vE 'Auto-generated|generated_at|updated_at' "$f") > /dev/null; then
@@ -56,8 +56,7 @@ jobs:
             fi
           done
           git add -A
-          git add -f js/blog-data.js
-          git add -f js/github-data.js
+          git add -f js/blog-data.js js/github-data.js sitemap.xml feed.xml
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "No changes to commit"

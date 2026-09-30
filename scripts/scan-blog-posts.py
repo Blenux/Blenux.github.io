@@ -14,8 +14,12 @@ import re
 import json
 import html
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
+
+SITE_URL = 'https://blenux.github.io'
+STATIC_PAGES = ['index.html', 'blogs.html', 'github.html', 'about.html']
+FEED_MAX_ENTRIES = 20
 
 
 def get_auto_date(file_path):
@@ -64,9 +68,10 @@ def parse_date_to_timestamp(date_str):
         '%Y',                 # 2026
     ]
 
+    # BLX - Pin to UTC so local runs and CI generate identical timestamps
     for fmt in formats:
         try:
-            dt = datetime.strptime(date_str.strip(), fmt)
+            dt = datetime.strptime(date_str.strip(), fmt).replace(tzinfo=timezone.utc)
             return dt.timestamp()
         except ValueError:
             continue
@@ -74,7 +79,7 @@ def parse_date_to_timestamp(date_str):
     year_match = re.search(r'(\d{4})', date_str)
     if year_match:
         try:
-            return datetime(int(year_match.group(1)), 1, 1).timestamp()
+            return datetime(int(year_match.group(1)), 1, 1, tzinfo=timezone.utc).timestamp()
         except ValueError:
             pass
 
@@ -105,6 +110,9 @@ def extract_metadata(file_path, html_content):
     date = extract_text_from_html(html_content, r'<meta[^>]+name=["\']date["\'][^>]+content=["\']([^"\']+)')
     if not date:
         date = extract_text_from_html(html_content, r'<em[^>]*>\s*Posted:\s*(.*?)\s*</em>')
+        if date:
+            # BLX - Strip markup like <time datetime="..."> wrapped around the date
+            date = re.sub(r'<[^>]+>', '', date).strip()
     if not date:
         date = get_auto_date(file_path)
 
@@ -122,10 +130,13 @@ def extract_metadata(file_path, html_content):
         )
         excerpt = first_p if first_p else 'No excerpt available.'
 
+    timestamp = parse_date_to_timestamp(date)
     return {
         'title': title,
         'date': date,
-        'timestamp': parse_date_to_timestamp(date),
+        'date_iso': (datetime.fromtimestamp(timestamp, tz=timezone.utc).date().isoformat()
+                     if timestamp else ''),
+        'timestamp': timestamp,
         'tags': tags,
         'excerpt': excerpt,
         'filename': filename,
@@ -147,6 +158,80 @@ const staticBlogPosts = {json.dumps(posts, indent=2, ensure_ascii=False)};
 
 const staticBlogCategories = {json.dumps(categories, indent=2, ensure_ascii=False)};
 '''
+
+
+def xml_escape(text):
+    return html.escape(str(text or ''), quote=True)
+
+
+def get_git_lastmod(file_path):
+    """Last git commit date (YYYY-MM-DD) for a file — stable across CI checkouts,
+    unlike file mtime which becomes the checkout time."""
+    try:
+        result = subprocess.run(
+            ['git', 'log', '-1', '--format=%ct', '--', str(file_path)],
+            capture_output=True, text=True, cwd=file_path.parent
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return datetime.fromtimestamp(int(result.stdout.strip())).date().isoformat()
+    except Exception:
+        pass
+    try:
+        return datetime.fromtimestamp(file_path.stat().st_mtime).date().isoformat()
+    except OSError:
+        return ''
+
+
+def generate_sitemap_xml(posts, project_root):
+    """Generate sitemap.xml covering static pages and all blog posts."""
+    urls = []
+    for page in STATIC_PAGES:
+        urls.append((f'{SITE_URL}/{page}', get_git_lastmod(project_root / page)))
+
+    for post in posts:
+        urls.append((f"{SITE_URL}/blog-posts/{post['filename']}", post.get('date_iso') or ''))
+
+    entries = ''.join(
+        f'  <url>\n    <loc>{xml_escape(loc)}</loc>\n'
+        + (f'    <lastmod>{lastmod}</lastmod>\n' if lastmod else '')
+        + '  </url>\n'
+        for loc, lastmod in urls
+    )
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            f'{entries}</urlset>\n')
+
+
+def generate_feed_xml(posts):
+    """Generate an Atom feed (feed.xml) for the blog."""
+    def rfc3339(ts):
+        return (datetime.fromtimestamp(ts).astimezone(timezone.utc)
+                .strftime('%Y-%m-%dT%H:%M:%SZ'))
+
+    entries = []
+    for post in posts[:FEED_MAX_ENTRIES]:
+        url = f"{SITE_URL}/blog-posts/{post['filename']}"
+        updated = rfc3339(post['timestamp']) if post.get('timestamp') else ''
+        entries.append(
+            '  <entry>\n'
+            f'    <title>{xml_escape(post["title"])}</title>\n'
+            f'    <link href="{xml_escape(url)}"/>\n'
+            f'    <id>{xml_escape(url)}</id>\n'
+            + (f'    <updated>{updated}</updated>\n' if updated else '')
+            + f'    <summary>{xml_escape(post["excerpt"])}</summary>\n'
+              '  </entry>\n'
+        )
+
+    feed_updated = rfc3339(posts[0]['timestamp']) if posts else rfc3339(datetime.now().timestamp())
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<feed xmlns="http://www.w3.org/2005/Atom">\n'
+            '  <title>Blenux</title>\n'
+            f'  <link href="{SITE_URL}/"/>\n'
+            f'  <link rel="self" href="{SITE_URL}/feed.xml"/>\n'
+            f'  <id>{SITE_URL}/</id>\n'
+            f'  <updated>{feed_updated}</updated>\n'
+            '  <author><name>Blenux</name></author>\n'
+            f'{"".join(entries)}</feed>\n')
 
 
 def main():
@@ -176,8 +261,15 @@ def main():
     output_file = js_dir / 'blog-data.js'
     output_file.write_text(generate_blog_data_js(posts), encoding='utf-8')
 
+    (project_root / 'sitemap.xml').write_text(
+        generate_sitemap_xml(posts, project_root), encoding='utf-8')
+    (project_root / 'feed.xml').write_text(
+        generate_feed_xml(posts), encoding='utf-8')
+
     print(f"\n📝 Found {len(posts)} post(s) in blog-posts/")
     print(f"✅ Generated: {output_file}")
+    print(f"✅ Generated: {project_root / 'sitemap.xml'}")
+    print(f"✅ Generated: {project_root / 'feed.xml'}")
 
 
 if __name__ == '__main__':

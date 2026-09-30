@@ -1,0 +1,46 @@
+# BLX - Validate scripts and JS syntax on pushes/PRs without committing anything
+name: Validate
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/**'
+      - 'js/**'
+      - '*.html'
+      - 'css/**'
+      - '.github/workflows/validate.yml'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile-check Python scripts
+        run: python3 -m py_compile scripts/*.py
+
+      - name: Run blog index generator
+        run: python3 scripts/scan-blog-posts.py
+
+      - name: Run GitHub data generator
+        run: python3 scripts/generate-github-data.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Syntax-check JS files
+        run: |
+          for f in js/*.js; do
+            node --check "$f"
+          done

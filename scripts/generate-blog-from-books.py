@@ -7,7 +7,11 @@ Usage: python3 scripts/generate-blog-from-books.py
 import os
 import re
 from datetime import datetime
+from html import escape as html_escape
 from pathlib import Path
+
+SITE_URL = 'https://blenux.github.io'
+AVATAR_URL = 'https://avatars.githubusercontent.com/u/25260650?v=4'
 
 def is_blog_file(content):
     """Check if a file contains 'blog = true' marker."""
@@ -95,79 +99,114 @@ def parse_text_content(content, filename):
         'body': [line for line in body if line]
     }
 
+def format_inline(text):
+    """Escape HTML, then apply inline markup: `code`, [text](url), **bold**, *italic*."""
+    text = html_escape(text)
+    text = re.sub(r'`([^`]+)`', r'<code>\1</code>', text)
+    text = re.sub(r'\[([^\]]+)\]\((https?://[^\s)]+)\)', r'<a href="\2">\1</a>', text)
+    text = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', text)
+    text = re.sub(r'(?<!\*)\*([^*\n]+)\*(?!\*)', r'<em>\1</em>', text)
+    return text
+
+
 def convert_to_html(content):
     """Convert text content to HTML."""
     html = []
     in_list = False
-    
+
     for line in content:
         # Headers
         if line.startswith('## '):
             if in_list:
                 html.append('</ul>')
                 in_list = False
-            html.append(f'<h2>{line[3:]}</h2>')
+            html.append(f'<h2>{format_inline(line[3:])}</h2>')
         elif line.startswith('### '):
             if in_list:
                 html.append('</ul>')
                 in_list = False
-            html.append(f'<h3>{line[4:]}</h3>')
-        
+            html.append(f'<h3>{format_inline(line[4:])}</h3>')
+
         # Lists
         elif line.startswith('- ') or line.startswith('* '):
             if not in_list:
                 html.append('<ul>')
                 in_list = True
-            html.append(f'<li>{line[2:]}</li>')
-        
+            html.append(f'<li>{format_inline(line[2:])}</li>')
+
         # Paragraphs
         elif line.strip():
             if in_list:
                 html.append('</ul>')
                 in_list = False
-            html.append(f'<p>{line}</p>')
-        
+            html.append(f'<p>{format_inline(line)}</p>')
+
         # Empty lines
         else:
             if in_list:
                 html.append('</ul>')
                 in_list = False
-    
+
     # Close any open list
     if in_list:
         html.append('</ul>')
-    
+
     return '\n'.join(html)
+
+
+def date_to_iso(date_str):
+    """Convert a human date like 'July 2026' to YYYY-MM-DD for <time datetime>."""
+    for fmt in ('%Y-%m-%d', '%B %d, %Y', '%b %d, %Y', '%B %Y', '%b %Y', '%Y-%m', '%Y'):
+        try:
+            return datetime.strptime(date_str.strip(), fmt).date().isoformat()
+        except ValueError:
+            continue
+    return ''
 
 def create_blog_post_html(metadata, content, filename):
     """Create the full HTML blog post."""
     html_content = convert_to_html(content)
-    
+    title = html_escape(metadata['title'])
+    excerpt = html_escape(metadata['excerpt'], quote=True)
+    tags = html_escape(', '.join(metadata['tags']), quote=True)
+    post_url = f'{SITE_URL}/blog-posts/{Path(filename).stem}.html'
+    iso_date = date_to_iso(metadata['date'])
+    posted = (f'<time datetime="{iso_date}">{metadata["date"]}</time>'
+              if iso_date else html_escape(metadata['date']))
+
     return f'''<!DOCTYPE html>
 <!-- Generated from books/ source file -->
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Blenux - {metadata['title']}</title>
-    <meta name="tags" content="{', '.join(metadata['tags'])}">
-    <meta name="excerpt" content="{metadata['excerpt']}">
+    <meta name="description" content="{excerpt}">
+    <meta property="og:title" content="Blenux - {title}">
+    <meta property="og:description" content="{excerpt}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{post_url}">
+    <meta property="og:image" content="{AVATAR_URL}">
+    <link rel="icon" href="{AVATAR_URL}">
+    <link rel="alternate" type="application/atom+xml" title="Blenux Blog" href="../feed.xml">
+    <title>Blenux - {title}</title>
+    <meta name="tags" content="{tags}">
+    <meta name="excerpt" content="{excerpt}">
     <script src="../js/theme-toggle.js"></script>
 </head>
 
 <body>
-    <header>{metadata['title']}</header>
+    <header>{title}</header>
 
     <nav id="site-nav"></nav>
     <script src="../js/nav.js"></script>
 
     <main>
         <article>
-            <h1>{metadata['title']}</h1>
-            <p><em>Posted: {metadata['date']}</em></p>
-            
+            <h1>{title}</h1>
+            <p><em>Posted: {posted}</em></p>
+
             {html_content}
-            
+
             <p><a href="../blogs.html">Back to Blog Index</a></p>
         </article>
     </main>

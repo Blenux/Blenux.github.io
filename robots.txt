@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://blenux.github.io/sitemap.xml

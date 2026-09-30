@@ -67,7 +67,7 @@ function renderSearchBox(container, blogContainer) {
     container.innerHTML = '';
 
     const input = document.createElement('input');
-    input.type = 'text';
+    input.type = 'search';
     input.placeholder = 'Search posts...';
     input.className = 'blog-search-input';
     input.addEventListener('input', () => {
@@ -141,7 +141,17 @@ function createBlogPreview(post) {
     title.appendChild(titleLink);
 
     const date = document.createElement('p');
-    date.innerHTML = `<em>Posted: ${post.date}</em>`;
+    const em = document.createElement('em');
+    if (post.date_iso) {
+        const time = document.createElement('time');
+        time.setAttribute('datetime', post.date_iso);
+        time.textContent = post.date;
+        em.textContent = 'Posted: ';
+        em.appendChild(time);
+    } else {
+        em.textContent = `Posted: ${post.date}`;
+    }
+    date.appendChild(em);
 
     const excerpt = document.createElement('p');
     excerpt.textContent = post.excerpt;

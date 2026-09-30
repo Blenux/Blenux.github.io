@@ -22,7 +22,11 @@ REPOS_FOR_BRANCH_DETAIL = 4
 BRANCHES_PER_REPO = 3
 COMMITS_PER_BRANCH = 5
 CONTRIB_COMMITS_PER_REPO = 10
+MAX_CONTRIB_REPOS = 5
+SEARCH_MAX_ITEMS = 50
 
+# BLX - Repos that always appear in the Contributions section, even if the
+# commit-search discovery misses them
 CONTRIB_REPOS = [
     {
         'name': 'Bforartists',
@@ -145,11 +149,46 @@ def build_owned_repo_data(repos):
     return result
 
 
-def build_contrib_repo_data():
+def discover_contrib_repos():
+    """Find external repos the user has committed to, via the commit search API."""
+    url = ('https://api.github.com/search/commits?q=author:' + USERNAME +
+           '&sort=committer-date&order=desc&per_page=' + str(SEARCH_MAX_ITEMS))
+    result = api_get(url)
+    repos = []
+    seen = set()
+    for item in (result or {}).get('items', []):
+        repo = item.get('repository') or {}
+        full_name = repo.get('full_name') or ''
+        if not full_name or full_name.startswith(USERNAME + '/') or full_name in seen:
+            continue
+        seen.add(full_name)
+        repos.append({
+            'name': repo.get('name') or full_name.split('/')[-1],
+            'full_name': full_name,
+            'html_url': repo.get('html_url') or ('https://github.com/' + full_name),
+            'description': repo.get('description') or '',
+        })
+        if len(repos) >= MAX_CONTRIB_REPOS:
+            break
+    return repos
+
+
+def collect_contrib_repos():
+    """Merge pinned contrib repos with auto-discovered ones, deduped by full_name."""
+    repos = list(CONTRIB_REPOS)
+    seen = {r['full_name'] for r in repos}
+    for repo in discover_contrib_repos():
+        if repo['full_name'] not in seen:
+            seen.add(repo['full_name'])
+            repos.append(repo)
+    return repos[:MAX_CONTRIB_REPOS]
+
+
+def build_contrib_repo_data(contrib_repos):
     """Fetch contribution commits for each contrib repo."""
     result = []
-    for repo in CONTRIB_REPOS:
-        print(f"  Fetching contrib commits for {repo['name']}...")
+    for repo in contrib_repos:
+        print(f"  Fetching contrib commits for {repo['full_name']}...")
         commits = fetch_contrib_commits(repo)
         result.append({
             'name': repo['name'],
@@ -200,8 +239,11 @@ def main():
     print("Fetching owned repo branch/commit details...")
     owned_detail = build_owned_repo_data(repos)
 
+    print("Discovering contribution repos...")
+    contrib_repo_list = collect_contrib_repos()
+
     print("Fetching contribution repo commits...")
-    contrib_detail = build_contrib_repo_data()
+    contrib_detail = build_contrib_repo_data(contrib_repo_list)
 
     # BLX - Build contrib repo list for rendering
     contrib_repos = [
@@ -209,10 +251,10 @@ def main():
             'name': r['name'],
             'full_name': r['full_name'],
             'html_url': r['html_url'],
-            'description': '',
+            'description': r.get('description', ''),
             'contrib': True,
         }
-        for r in CONTRIB_REPOS
+        for r in contrib_repo_list
     ]
 
     data = {
